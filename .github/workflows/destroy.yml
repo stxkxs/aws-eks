@@ -1,0 +1,84 @@
+name: Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to destroy'
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+      aws_account_id:
+        description: 'AWS Account ID'
+        required: true
+        type: string
+      aws_region:
+        description: 'AWS Region'
+        required: false
+        type: string
+        default: 'us-west-2'
+      dry_run:
+        description: 'Dry run (show what would be destroyed without destroying)'
+        required: false
+        type: boolean
+        default: true
+      confirm_environment:
+        description: 'Type the environment name to confirm destruction'
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ inputs.confirm_environment }}" != "${{ inputs.environment }}" ]; then
+            echo "ERROR: Confirmation does not match environment."
+            echo "Expected: ${{ inputs.environment }}"
+            echo "Got: ${{ inputs.confirm_environment }}"
+            exit 1
+          fi
+          echo "Confirmation validated for environment: ${{ inputs.environment }}"
+
+  destroy:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Destroy
+        run: |
+          bash scripts/destroy.sh \
+            -e ${{ inputs.environment }} \
+            -a ${{ inputs.aws_account_id }} \
+            -r ${{ inputs.aws_region }} \
+            ${{ inputs.dry_run && '--dry-run' || '' }}

@@ -1,0 +1,177 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        run: ESLINT_USE_FLAT_CONFIG=false npx eslint . --ext .ts --max-warnings 0
+
+      - name: Prettier
+        run: npx prettier --check '**/*.ts'
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test -- --coverage --ci
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+
+  synth:
+    name: CDK Synth (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    strategy:
+      matrix:
+        environment: [dev, staging, production]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Synthesize (${{ matrix.environment }})
+        run: npx cdk synth -c environment=${{ matrix.environment }} -c account=123456789012 -o cdk.out/${{ matrix.environment }}
+        env:
+          CDK_DEFAULT_ACCOUNT: '123456789012'
+          CDK_DEFAULT_REGION: 'us-west-2'
+
+      - name: Upload synthesized templates
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdk-out-${{ matrix.environment }}
+          path: cdk.out/${{ matrix.environment }}
+          retention-days: 7
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test, synth, security-scan]
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Create PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('## CDK Validation Summary')
+            );
+
+            const lintStatus = '${{ needs.lint.result }}' === 'success' ? '✅' : '❌';
+            const testStatus = '${{ needs.test.result }}' === 'success' ? '✅' : '❌';
+            const securityStatus = '${{ needs.security-scan.result }}' === 'success' ? '✅' : '❌';
+
+            // Determine per-environment synth status from the matrix job
+            const synthResult = '${{ needs.synth.result }}';
+            const synthOverall = synthResult === 'success' ? '✅' : '❌';
+
+            const body = `## CDK Validation Summary
+
+            | Check | Status |
+            |-------|--------|
+            | Lint (tsc + eslint + prettier) | ${lintStatus} |
+            | Tests | ${testStatus} |
+            | CDK Synth (all envs) | ${synthOverall} |
+            | Security Scan (Trivy) | ${securityStatus} |
+
+            ---
+            *Updated: ${new Date().toISOString()}*`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }

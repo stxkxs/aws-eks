@@ -1,0 +1,42 @@
+# kube-linter configuration
+# https://docs.kubelinter.io/#/configuring-kubelinter
+
+checks:
+  # Exclude checks that don't apply to CDK-generated manifests
+  exclude:
+    # CDK generates resources without certain labels
+    - "unset-cpu-requirements"
+    - "unset-memory-requirements"
+    # Helm chart defaults may not include all recommended settings
+    - "no-read-only-root-fs"
+    - "run-as-non-root"
+    # Service accounts are managed by IRSA
+    - "default-service-account"
+
+  # Include additional security checks
+  include:
+    - "dangling-service"
+    - "deprecated-service-account-field"
+    - "docker-sock"
+    - "drop-net-raw-capability"
+    - "env-var-secret"
+    - "exposed-services"
+    - "host-ipc"
+    - "host-network"
+    - "host-pid"
+    - "mismatching-selector"
+    - "no-anti-affinity"
+    - "privilege-escalation-container"
+    - "privileged-container"
+    - "sensitive-host-mounts"
+    - "ssh-port"
+    - "unsafe-proc-mount"
+    - "unsafe-sysctls"
+    - "writable-host-mount"
+
+customChecks:
+  # Custom check for required labels
+  - name: "required-labels"
+    template: "required-label"
+    params:
+      key: "app.kubernetes.io/managed-by"

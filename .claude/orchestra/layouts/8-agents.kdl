@@ -1,0 +1,81 @@
+// Zellij layout for 8-agent AWS EKS development
+// Uses environment variables: $ORCH_ROOT, $ORCH_SESSION_DIR
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="compact-bar"
+        }
+        children
+    }
+
+    // Tab 1: Orchestrator (you)
+    tab name="Orchestrator" focus=true {
+        pane name="orchestrator" {
+            command "bash"
+            args "-c" "$ORCH_ROOT/scripts/start-agent.sh 0"
+        }
+    }
+
+    // Tab 2: Infrastructure (ARCH, PLAT)
+    tab name="Infrastructure" {
+        pane split_direction="horizontal" {
+            pane name="[*] Agent-1-ARCH" size="50%" {
+                command "bash"
+                args "-c" "$ORCH_ROOT/scripts/start-agent.sh 1"
+            }
+            pane name="[*] Agent-2-PLAT" size="50%" {
+                command "bash"
+                args "-c" "$ORCH_ROOT/scripts/start-agent.sh 2"
+            }
+        }
+    }
+
+    // Tab 3: Addons (SEC, OBS, NET, OPS) - 2x2 grid
+    tab name="Addons" {
+        pane split_direction="vertical" {
+            pane split_direction="horizontal" size="50%" {
+                pane name="[*] Agent-3-SEC" {
+                    command "bash"
+                    args "-c" "$ORCH_ROOT/scripts/start-agent.sh 3"
+                }
+                pane name="[*] Agent-4-OBS" {
+                    command "bash"
+                    args "-c" "$ORCH_ROOT/scripts/start-agent.sh 4"
+                }
+            }
+            pane split_direction="horizontal" size="50%" {
+                pane name="[*] Agent-5-NET" {
+                    command "bash"
+                    args "-c" "$ORCH_ROOT/scripts/start-agent.sh 5"
+                }
+                pane name="[*] Agent-6-OPS" {
+                    command "bash"
+                    args "-c" "$ORCH_ROOT/scripts/start-agent.sh 6"
+                }
+            }
+        }
+    }
+
+    // Tab 4: Validation (QA, DOCS)
+    tab name="Validation" {
+        pane split_direction="horizontal" {
+            pane name="[*] Agent-7-QA" size="50%" {
+                command "bash"
+                args "-c" "$ORCH_ROOT/scripts/start-agent.sh 7"
+            }
+            pane name="[*] Agent-8-DOCS" size="50%" {
+                command "bash"
+                args "-c" "$ORCH_ROOT/scripts/start-agent.sh 8"
+            }
+        }
+    }
+
+    // Tab 5: Monitor
+    tab name="Monitor" {
+        pane name="monitor" {
+            command "bash"
+            args "-c" "$ORCH_ROOT/scripts/monitor.sh"
+        }
+    }
+}

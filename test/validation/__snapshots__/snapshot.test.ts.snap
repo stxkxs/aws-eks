@@ -1,0 +1,4886 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CloudFormation Snapshot Tests ClusterStack snapshots dev environment cluster matches snapshot 1`] = `
+Object {
+  "Conditions": Object {
+    "ClusterHasEcrPublic8EE1114E": Object {
+      "Fn::Equals": Array [
+        Object {
+          "Ref": "AWS::Partition",
+        },
+        "aws",
+      ],
+    },
+  },
+  "Outputs": Object {
+    "ClusterEndpoint": Object {
+      "Description": "EKS Cluster Endpoint",
+      "Export": Object {
+        "Name": "dev-cluster-endpoint",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "Cluster9EE0221C",
+          "Endpoint",
+        ],
+      },
+    },
+    "ClusterName": Object {
+      "Description": "EKS Cluster Name",
+      "Export": Object {
+        "Name": "dev-cluster-name",
+      },
+      "Value": Object {
+        "Ref": "Cluster9EE0221C",
+      },
+    },
+    "ClusterSecurityGroupId": Object {
+      "Description": "EKS Cluster Security Group ID",
+      "Export": Object {
+        "Name": "dev-cluster-sg-id",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "Cluster9EE0221C",
+          "ClusterSecurityGroupId",
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "Cluster9EE0221C": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "ClusterCreationRoleDefaultPolicyE8BDFC7B",
+        "ClusterCreationRole360249B6",
+      ],
+      "Properties": Object {
+        "AssumeRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "ClusterCreationRole360249B6",
+            "Arn",
+          ],
+        },
+        "AttributesRevision": 5,
+        "Config": Object {
+          "accessConfig": Object {},
+          "encryptionConfig": Array [
+            Object {
+              "provider": Object {
+                "keyArn": Object {
+                  "Fn::GetAtt": Array [
+                    "SecretsKey317DCF94",
+                    "Arn",
+                  ],
+                },
+              },
+              "resources": Array [
+                "secrets",
+              ],
+            },
+          ],
+          "kubernetesNetworkConfig": Object {
+            "ipFamily": "ipv4",
+          },
+          "logging": Object {
+            "clusterLogging": Array [
+              Object {
+                "enabled": true,
+                "types": Array [
+                  "api",
+                  "audit",
+                  "authenticator",
+                  "controllerManager",
+                  "scheduler",
+                ],
+              },
+            ],
+          },
+          "name": "dev-eks",
+          "resourcesVpcConfig": Object {
+            "endpointPrivateAccess": true,
+            "endpointPublicAccess": true,
+            "securityGroupIds": Array [
+              Object {
+                "Fn::GetAtt": Array [
+                  "ClusterControlPlaneSecurityGroupD274242C",
+                  "GroupId",
+                ],
+              },
+            ],
+            "subnetIds": Array [
+              Object {
+                "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpcPublicSubnet1Subnet5C2D37C4FFA2B456",
+              },
+              Object {
+                "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpcPublicSubnet2Subnet691E08A351552740",
+              },
+              Object {
+                "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940",
+              },
+              Object {
+                "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3",
+              },
+            ],
+          },
+          "roleArn": Object {
+            "Fn::GetAtt": Array [
+              "ClusterRoleFA261979",
+              "Arn",
+            ],
+          },
+          "version": "1.35",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+            "Outputs.TestClusterDevawscdkawseksClusterResourceProviderframeworkonEventCB47C081Arn",
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDK-EKS-Cluster",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ClusterAwsAuthmanifestFE51F8AE": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "ClusterKubectlReadyBarrier200052AF",
+      ],
+      "Properties": Object {
+        "ClusterName": Object {
+          "Ref": "Cluster9EE0221C",
+        },
+        "Manifest": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "[{\\"apiVersion\\":\\"v1\\",\\"kind\\":\\"ConfigMap\\",\\"metadata\\":{\\"name\\":\\"aws-auth\\",\\"namespace\\":\\"kube-system\\",\\"labels\\":{\\"aws.cdk.eks/prune-c8eba8490e04e5c9d762a395199fa7d4fa4cc9fb80\\":\\"\\"}},\\"data\\":{\\"mapRoles\\":\\"[{\\\\\\"rolearn\\\\\\":\\\\\\"",
+              Object {
+                "Fn::GetAtt": Array [
+                  "ClusterNodegroupSystemNodeGroupNodeGroupRoleB88089B9",
+                  "Arn",
+                ],
+              },
+              "\\\\\\",\\\\\\"username\\\\\\":\\\\\\"system:node:{{EC2PrivateDNSName}}\\\\\\",\\\\\\"groups\\\\\\":[\\\\\\"system:bootstrappers\\\\\\",\\\\\\"system:nodes\\\\\\"]},{\\\\\\"rolearn\\\\\\":\\\\\\"arn:aws:iam::351619759866:role/AWSReservedSSO_AdministratorAccess_5377f4150a5a6bfe\\\\\\",\\\\\\"username\\\\\\":\\\\\\"sso-admin\\\\\\",\\\\\\"groups\\\\\\":[\\\\\\"system:masters\\\\\\"]},{\\\\\\"rolearn\\\\\\":\\\\\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":iam::",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":role/dev-eks-karpenter-node\\\\\\",\\\\\\"username\\\\\\":\\\\\\"system:node:{{EC2PrivateDNSName}}\\\\\\",\\\\\\"groups\\\\\\":[\\\\\\"system:bootstrappers\\\\\\",\\\\\\"system:nodes\\\\\\"]}]\\",\\"mapUsers\\":\\"[]\\",\\"mapAccounts\\":\\"[]\\"}}]",
+            ],
+          ],
+        },
+        "Overwrite": true,
+        "PruneLabel": "aws.cdk.eks/prune-c8eba8490e04e5c9d762a395199fa7d4fa4cc9fb80",
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "ClusterCreationRole360249B6",
+            "Arn",
+          ],
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+            "Outputs.TestClusterDevawscdkawseksKubectlProviderframeworkonEventDF016182Arn",
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ClusterControlPlaneSecurityGroupD274242C": Object {
+      "Properties": Object {
+        "GroupDescription": "EKS Control Plane Security Group",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpc8378EB38272D6E3A",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ClusterCreationRole360249B6": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                    "Outputs.TestClusterDevawscdkawseksClusterResourceProviderOnEventHandlerServiceRole57E60543Arn",
+                  ],
+                },
+              },
+            },
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                    "Outputs.TestClusterDevawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole28E43025Arn",
+                  ],
+                },
+              },
+            },
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "ClusterKubectlHandlerRole94549F93",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ClusterCreationRoleDefaultPolicyE8BDFC7B": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "ClusterRoleFA261979",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "eks:CreateCluster",
+                "eks:DescribeCluster",
+                "eks:DescribeUpdate",
+                "eks:DeleteCluster",
+                "eks:UpdateClusterVersion",
+                "eks:UpdateClusterConfig",
+                "eks:CreateFargateProfile",
+                "eks:TagResource",
+                "eks:UntagResource",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":eks:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":cluster/dev-eks",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":eks:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":cluster/dev-eks/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "eks:DescribeFargateProfile",
+                "eks:DeleteFargateProfile",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":eks:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":fargateprofile/dev-eks/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "iam:GetRole",
+                "iam:listAttachedRolePolicies",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:CreateServiceLinkedRole",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "ec2:DescribeInstances",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeRouteTables",
+                "ec2:DescribeDhcpOptions",
+                "ec2:DescribeVpcs",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:CreateGrant",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "SecretsKey317DCF94",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
+        "Roles": Array [
+          Object {
+            "Ref": "ClusterCreationRole360249B6",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ClusterKubectlHandlerRole94549F93": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly",
+              ],
+            ],
+          },
+          Object {
+            "Fn::If": Array [
+              "ClusterHasEcrPublic8EE1114E",
+              Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly",
+                  ],
+                ],
+              },
+              Object {
+                "Ref": "AWS::NoValue",
+              },
+            ],
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ClusterKubectlHandlerRoleDefaultPolicyE44083DD": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "eks:DescribeCluster",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "Cluster9EE0221C",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "ClusterCreationRole360249B6",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
+        "Roles": Array [
+          Object {
+            "Ref": "ClusterKubectlHandlerRole94549F93",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ClusterKubectlReadyBarrier200052AF": Object {
+      "DependsOn": Array [
+        "ClusterCreationRoleDefaultPolicyE8BDFC7B",
+        "ClusterCreationRole360249B6",
+        "Cluster9EE0221C",
+      ],
+      "Properties": Object {
+        "Type": "String",
+        "Value": "aws:cdk:eks:kubectl-ready",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "ClusterNodegroupSystemNodeGroup3111CE82": Object {
+      "Properties": Object {
+        "AmiType": "BOTTLEROCKET_x86_64",
+        "CapacityType": "ON_DEMAND",
+        "ClusterName": Object {
+          "Ref": "Cluster9EE0221C",
+        },
+        "DiskSize": 50,
+        "ForceUpdateEnabled": true,
+        "InstanceTypes": Array [
+          "m5a.large",
+          "m5.large",
+        ],
+        "Labels": Object {
+          "karpenter.sh/do-not-disrupt": "true",
+          "node-role": "system",
+        },
+        "NodeRole": Object {
+          "Fn::GetAtt": Array [
+            "ClusterNodegroupSystemNodeGroupNodeGroupRoleB88089B9",
+            "Arn",
+          ],
+        },
+        "NodegroupName": "dev-system",
+        "ScalingConfig": Object {
+          "DesiredSize": 2,
+          "MaxSize": 4,
+          "MinSize": 2,
+        },
+        "Subnets": Array [
+          Object {
+            "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940",
+          },
+          Object {
+            "Fn::ImportValue": "TestNetworkDev:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3",
+          },
+        ],
+        "Tags": Object {
+          "cost-center": "development",
+          "environment": "dev",
+          "karpenter.sh/discovery": "dev-eks",
+          "managed-by": "cdk",
+          "project": "aws-eks",
+        },
+        "Taints": Array [
+          Object {
+            "Effect": "PREFER_NO_SCHEDULE",
+            "Key": "CriticalAddonsOnly",
+            "Value": "true",
+          },
+        ],
+      },
+      "Type": "AWS::EKS::Nodegroup",
+    },
+    "ClusterNodegroupSystemNodeGroupNodeGroupRoleB88089B9": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "ec2.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore",
+              ],
+            ],
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ClusterRoleFA261979": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "eks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonEKSClusterPolicy",
+              ],
+            ],
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ClusterSecurityGroupfromTestClusterDevClusterSecurityGroup56DE9381424088C4B809": Object {
+      "Properties": Object {
+        "Description": "Cilium health checks",
+        "FromPort": 4240,
+        "GroupId": Object {
+          "Fn::GetAtt": Array [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": Object {
+          "Fn::GetAtt": Array [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId",
+          ],
+        },
+        "ToPort": 4240,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "ClusterSecurityGroupfromTestClusterDevClusterSecurityGroup56DE938142459C9A01F4": Object {
+      "Properties": Object {
+        "Description": "Hubble Relay gRPC",
+        "FromPort": 4245,
+        "GroupId": Object {
+          "Fn::GetAtt": Array [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": Object {
+          "Fn::GetAtt": Array [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId",
+          ],
+        },
+        "ToPort": 4245,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "ClusterSecurityGroupfromTestClusterDevClusterSecurityGroup56DE9381UDP8472B4AAF1C9": Object {
+      "Properties": Object {
+        "Description": "Cilium VXLAN overlay networking",
+        "FromPort": 8472,
+        "GroupId": Object {
+          "Fn::GetAtt": Array [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId",
+          ],
+        },
+        "IpProtocol": "udp",
+        "SourceSecurityGroupId": Object {
+          "Fn::GetAtt": Array [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId",
+          ],
+        },
+        "ToPort": 8472,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "KubectlLayer600207B5": Object {
+      "Properties": Object {
+        "Content": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "LAMBDA_CODE.zip",
+        },
+        "Description": "/opt/kubectl/kubectl 1.31.9; /opt/helm/helm 3.17.3",
+        "LicenseInfo": "Apache-2.0",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "SecretsKey317DCF94": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "Description": "KMS key for EKS secrets encryption - dev-eks",
+        "EnableKeyRotation": true,
+        "KeyPolicy": Object {
+          "Statement": Array [
+            Object {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "SecretsKeyAliasF590BEF1": Object {
+      "Properties": Object {
+        "AliasName": "alias/dev-eks-secrets",
+        "TargetKeyId": Object {
+          "Fn::GetAtt": Array [
+            "SecretsKey317DCF94",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::KMS::Alias",
+    },
+    "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "TemplateURL": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://s3.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".",
+              Object {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              Object {
+                "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+              },
+              "/ASSET_HASH.json",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::CloudFormation::Stack",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
+        "ClusterKubectlHandlerRole94549F93",
+      ],
+      "Properties": Object {
+        "Parameters": Object {
+          "referencetoTestClusterDevClusterA3591867ClusterSecurityGroupId": Object {
+            "Fn::GetAtt": Array [
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId",
+            ],
+          },
+          "referencetoTestClusterDevClusterKubectlHandlerRole0F49C3A0Arn": Object {
+            "Fn::GetAtt": Array [
+              "ClusterKubectlHandlerRole94549F93",
+              "Arn",
+            ],
+          },
+          "referencetoTestClusterDevKubectlLayerF05A2A12Ref": Object {
+            "Ref": "KubectlLayer600207B5",
+          },
+        },
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "TemplateURL": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://s3.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".",
+              Object {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              Object {
+                "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+              },
+              "/ASSET_HASH.json",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::CloudFormation::Stack",
+      "UpdateReplacePolicy": "Delete",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`CloudFormation Snapshot Tests NetworkStack snapshots dev environment network matches snapshot 1`] = `
+Object {
+  "Outputs": Object {
+    "VpcId": Object {
+      "Description": "VPC ID",
+      "Export": Object {
+        "Name": "dev-vpc-id",
+      },
+      "Value": Object {
+        "Ref": "Vpc8378EB38",
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "Vpc8378EB38": Object {
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "VpcCloudWatchLogsEndpointA6195533": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcCloudWatchLogsEndpointSecurityGroupE044298A",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".logs",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcCloudWatchLogsEndpointSecurityGroupE044298A": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/CloudWatchLogsEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcEc2MessagesEndpoint67F1BD3F": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcEc2MessagesEndpointSecurityGroupC588B2C5",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ec2messages",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcEc2MessagesEndpointSecurityGroupC588B2C5": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/Ec2MessagesEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcEcrApiEndpoint25D60339": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcEcrApiEndpointSecurityGroupA45F6D9E",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ecr.api",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcEcrApiEndpointSecurityGroupA45F6D9E": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/EcrApiEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcEcrDkrEndpoint764F3A9A": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcEcrDkrEndpointSecurityGroup01F64E22",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ecr.dkr",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcEcrDkrEndpointSecurityGroup01F64E22": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/EcrDkrEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcIGWD7BA715C": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPrivateSubnet1Subnet536B997A",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPrivateSubnet1RouteTableB2C5B500": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PrivateSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPrivateSubnet1Subnet536B997A": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.2.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PrivateSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcPrivateSubnet2DefaultRoute060D2087": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet2RouteTableA678073B",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPrivateSubnet2RouteTableA678073B": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PrivateSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet2RouteTableA678073B",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPrivateSubnet2Subnet3788AAA1": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.3.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PrivateSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcPublicSubnet1DefaultRoute3DA9E72A": Object {
+      "DependsOn": Array [
+        "VpcVPCGWBF912B6E",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPublicSubnet1EIPD7E02669": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "VpcPublicSubnet1NATGateway4D7517AA": Object {
+      "DependsOn": Array [
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet1RouteTableAssociation97140677",
+      ],
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "VpcPublicSubnet1EIPD7E02669",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "VpcPublicSubnet1RouteTable6C95E38E": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPublicSubnet1RouteTableAssociation97140677": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPublicSubnet1Subnet5C2D37C4": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcPublicSubnet2DefaultRoute97F91067": Object {
+      "DependsOn": Array [
+        "VpcVPCGWBF912B6E",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet2RouteTable94F7E489",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPublicSubnet2RouteTable94F7E489": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet2RouteTable94F7E489",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet2Subnet691E08A3",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPublicSubnet2Subnet691E08A3": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "dev-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/dev-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcS3Endpoint4A3DE4B5": Object {
+      "Properties": Object {
+        "RouteTableIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1RouteTableB2C5B500",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2RouteTableA678073B",
+          },
+          Object {
+            "Ref": "VpcPublicSubnet1RouteTable6C95E38E",
+          },
+          Object {
+            "Ref": "VpcPublicSubnet2RouteTable94F7E489",
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".s3",
+            ],
+          ],
+        },
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Gateway",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcSsmEndpointC46DB833": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcSsmEndpointSecurityGroup579ACE06",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ssm",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcSsmEndpointSecurityGroup579ACE06": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/SsmEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcSsmMessagesEndpoint27C6C023": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcSsmMessagesEndpointSecurityGroup560EC9B8",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ssmmessages",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcSsmMessagesEndpointSecurityGroup560EC9B8": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/SsmMessagesEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcStsEndpointF89E8173": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcStsEndpointSecurityGroup69BED13C",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".sts",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcStsEndpointSecurityGroup69BED13C": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkDev/Vpc/StsEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "cost-center",
+            "Value": "development",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "dev",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkDev/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcVPCGWBF912B6E": Object {
+      "Properties": Object {
+        "InternetGatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`CloudFormation Snapshot Tests NetworkStack snapshots production environment network matches snapshot 1`] = `
+Object {
+  "Outputs": Object {
+    "VpcId": Object {
+      "Description": "VPC ID",
+      "Export": Object {
+        "Name": "production-vpc-id",
+      },
+      "Value": Object {
+        "Ref": "Vpc8378EB38",
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "Vpc8378EB38": Object {
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "VpcCloudWatchLogsEndpointA6195533": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcCloudWatchLogsEndpointSecurityGroupE044298A",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".logs",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcCloudWatchLogsEndpointSecurityGroupE044298A": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/CloudWatchLogsEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcEc2MessagesEndpoint67F1BD3F": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcEc2MessagesEndpointSecurityGroupC588B2C5",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ec2messages",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcEc2MessagesEndpointSecurityGroupC588B2C5": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/Ec2MessagesEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcEcrApiEndpoint25D60339": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcEcrApiEndpointSecurityGroupA45F6D9E",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ecr.api",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcEcrApiEndpointSecurityGroupA45F6D9E": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/EcrApiEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcEcrDkrEndpoint764F3A9A": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcEcrDkrEndpointSecurityGroup01F64E22",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ecr.dkr",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcEcrDkrEndpointSecurityGroup01F64E22": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/EcrDkrEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcFlowLog8FF33A73": Object {
+      "Properties": Object {
+        "DeliverLogsPermissionArn": Object {
+          "Fn::GetAtt": Array [
+            "VpcFlowLogIAMRole6A475D41",
+            "Arn",
+          ],
+        },
+        "LogDestinationType": "cloud-watch-logs",
+        "LogGroupName": Object {
+          "Ref": "VpcFlowLogLogGroup7B5C56B9",
+        },
+        "ResourceId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+        "ResourceType": "VPC",
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/FlowLog",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "TrafficType": "ALL",
+      },
+      "Type": "AWS::EC2::FlowLog",
+    },
+    "VpcFlowLogIAMRole6A475D41": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "vpc-flow-logs.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/FlowLog",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VpcFlowLogIAMRoleDefaultPolicy406FB995": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "VpcFlowLogLogGroup7B5C56B9",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "VpcFlowLogIAMRoleDefaultPolicy406FB995",
+        "Roles": Array [
+          Object {
+            "Ref": "VpcFlowLogIAMRole6A475D41",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "VpcFlowLogLogGroup7B5C56B9": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 731,
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/FlowLog",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VpcIGWD7BA715C": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPrivateSubnet1Subnet536B997A",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPrivateSubnet1RouteTableB2C5B500": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PrivateSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPrivateSubnet1Subnet536B997A": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.2.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PrivateSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcPrivateSubnet2DefaultRoute060D2087": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "VpcPublicSubnet2NATGateway9182C01D",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet2RouteTableA678073B",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPrivateSubnet2RouteTableA678073B": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PrivateSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPrivateSubnet2RouteTableA678073B",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPrivateSubnet2Subnet3788AAA1": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.3.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/internal-elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PrivateSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcPublicSubnet1DefaultRoute3DA9E72A": Object {
+      "DependsOn": Array [
+        "VpcVPCGWBF912B6E",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPublicSubnet1EIPD7E02669": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "VpcPublicSubnet1NATGateway4D7517AA": Object {
+      "DependsOn": Array [
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet1RouteTableAssociation97140677",
+      ],
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "VpcPublicSubnet1EIPD7E02669",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "VpcPublicSubnet1RouteTable6C95E38E": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPublicSubnet1RouteTableAssociation97140677": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPublicSubnet1Subnet5C2D37C4": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcPublicSubnet2DefaultRoute97F91067": Object {
+      "DependsOn": Array [
+        "VpcVPCGWBF912B6E",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet2RouteTable94F7E489",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VpcPublicSubnet2EIP3C605A87": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "VpcPublicSubnet2NATGateway9182C01D": Object {
+      "DependsOn": Array [
+        "VpcPublicSubnet2DefaultRoute97F91067",
+        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+      ],
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "VpcPublicSubnet2EIP3C605A87",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet2Subnet691E08A3",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "VpcPublicSubnet2RouteTable94F7E489": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "VpcPublicSubnet2RouteTable94F7E489",
+        },
+        "SubnetId": Object {
+          "Ref": "VpcPublicSubnet2Subnet691E08A3",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VpcPublicSubnet2Subnet691E08A3": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "karpenter.sh/discovery",
+            "Value": "production-eks",
+          },
+          Object {
+            "Key": "kubernetes.io/cluster/production-eks",
+            "Value": "shared",
+          },
+          Object {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VpcS3Endpoint4A3DE4B5": Object {
+      "Properties": Object {
+        "RouteTableIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1RouteTableB2C5B500",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2RouteTableA678073B",
+          },
+          Object {
+            "Ref": "VpcPublicSubnet1RouteTable6C95E38E",
+          },
+          Object {
+            "Ref": "VpcPublicSubnet2RouteTable94F7E489",
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".s3",
+            ],
+          ],
+        },
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Gateway",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcSsmEndpointC46DB833": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcSsmEndpointSecurityGroup579ACE06",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ssm",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcSsmEndpointSecurityGroup579ACE06": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/SsmEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcSsmMessagesEndpoint27C6C023": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcSsmMessagesEndpointSecurityGroup560EC9B8",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".ssmmessages",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcSsmMessagesEndpointSecurityGroup560EC9B8": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/SsmMessagesEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcStsEndpointF89E8173": Object {
+      "Properties": Object {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "VpcStsEndpointSecurityGroup69BED13C",
+              "GroupId",
+            ],
+          },
+        ],
+        "ServiceName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "com.amazonaws.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".sts",
+            ],
+          ],
+        },
+        "SubnetIds": Array [
+          Object {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A",
+          },
+          Object {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCEndpoint",
+    },
+    "VpcStsEndpointSecurityGroup69BED13C": Object {
+      "Properties": Object {
+        "GroupDescription": "TestNetworkProd/Vpc/StsEndpoint/SecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Fn::GetAtt": Array [
+                "Vpc8378EB38",
+                "CidrBlock",
+              ],
+            },
+            "Description": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "from ",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "Vpc8378EB38",
+                      "CidrBlock",
+                    ],
+                  },
+                  ":443",
+                ],
+              ],
+            },
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "compliance",
+            "Value": "soc2,hipaa,pci-dss",
+          },
+          Object {
+            "Key": "cost-center",
+            "Value": "production",
+          },
+          Object {
+            "Key": "data-classification",
+            "Value": "confidential",
+          },
+          Object {
+            "Key": "environment",
+            "Value": "production",
+          },
+          Object {
+            "Key": "managed-by",
+            "Value": "cdk",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "TestNetworkProd/Vpc",
+          },
+          Object {
+            "Key": "project",
+            "Value": "aws-eks",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "VpcVPCGWBF912B6E": Object {
+      "Properties": Object {
+        "InternetGatewayId": Object {
+          "Ref": "VpcIGWD7BA715C",
+        },
+        "VpcId": Object {
+          "Ref": "Vpc8378EB38",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

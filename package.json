@@ -1,0 +1,56 @@
+{
+  "name": "aws-eks",
+  "version": "0.1.0",
+  "bin": {
+    "aws-eks": "bin/app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "synth": "npm run build && cdk synth",
+    "synth:dev": "npm run build && cdk synth -c environment=dev",
+    "synth:staging": "npm run build && cdk synth -c environment=staging",
+    "synth:prod": "npm run build && cdk synth -c environment=production",
+    "deploy:dev": "npm run build && cdk deploy --all -c environment=dev --require-approval broadening",
+    "deploy:staging": "npm run build && cdk deploy --all -c environment=staging --require-approval broadening",
+    "deploy:prod": "npm run build && cdk deploy --all -c environment=production --require-approval broadening",
+    "diff:dev": "npm run build && cdk diff --all -c environment=dev",
+    "diff:staging": "npm run build && cdk diff --all -c environment=staging",
+    "diff:prod": "npm run build && cdk diff --all -c environment=production",
+    "destroy:dev": "cdk destroy --all -c environment=dev",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts",
+    "lint:fix": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts --fix",
+    "format": "prettier --write '**/*.ts'",
+    "format:check": "prettier --check '**/*.ts'",
+    "typecheck": "tsc --noEmit",
+    "test:coverage": "jest --coverage --ci",
+    "docs:generate": "typedoc",
+    "docs:serve": "typedoc --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "^30",
+    "@types/node": "^24.10.9",
+    "@types/source-map-support": "^0.5.10",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "aws-cdk": "2.1102.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30",
+    "prettier": "^3.8.1",
+    "ts-jest": "^29",
+    "ts-node": "^10.9.2",
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
+    "aws-cdk-lib": "^2.237.0",
+    "constructs": "^10.4.5",
+    "source-map-support": "^0.5.21",
+    "zod": "^4.3.6"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "name": "aws-eks-dev",
+  "description": "8-agent configuration for AWS EKS infrastructure development",
+  "layout": "8-agents.kdl",
+  "agents": [
+    {
+      "id": 1,
+      "name": "ARCH",
+      "role": "Architect",
+      "description": "System design, types, config schema, cross-cutting concerns",
+      "focus": [
+        "lib/types/",
+        "config/",
+        "bin/app.ts",
+        "lib/utils.ts"
+      ],
+      "branch": "agent-1-arch",
+      "dependencies": [],
+      "blocks": [2, 3, 4, 5, 6]
+    },
+    {
+      "id": 2,
+      "name": "PLAT",
+      "role": "Platform Engineer",
+      "description": "VPC, EKS cluster, managed node groups, Karpenter",
+      "focus": [
+        "lib/stacks/network.ts",
+        "lib/stacks/cluster.ts",
+        "lib/stacks/addons/operations.ts"
+      ],
+      "branch": "agent-2-plat",
+      "dependencies": [1],
+      "blocks": [5, 6, 7]
+    },
+    {
+      "id": 3,
+      "name": "SEC",
+      "role": "Security Engineer",
+      "description": "Falco, Trivy, Kyverno, security policies",
+      "focus": [
+        "lib/stacks/addons/security.ts",
+        "lib/constructs/kyverno-policy.ts"
+      ],
+      "branch": "agent-3-sec",
+      "dependencies": [1],
+      "blocks": [7]
+    },
+    {
+      "id": 4,
+      "name": "OBS",
+      "role": "Observability Engineer",
+      "description": "AMP, AMG, Loki, Tempo, Hubble UI, dashboards",
+      "focus": [
+        "lib/stacks/addons/observability.ts",
+        "lib/constructs/grafana-dashboard.ts"
+      ],
+      "branch": "agent-4-obs",
+      "dependencies": [1],
+      "blocks": [7]
+    },
+    {
+      "id": 5,
+      "name": "NET",
+      "role": "DevOps/Networking Engineer",
+      "description": "Cilium, ALB controller, External DNS, Hubble, cert-manager",
+      "focus": [
+        "lib/stacks/addons/networking.ts",
+        "lib/stacks/addons/core.ts"
+      ],
+      "branch": "agent-5-net",
+      "dependencies": [1, 2],
+      "blocks": [7]
+    },
+    {
+      "id": 6,
+      "name": "OPS",
+      "role": "Operations Engineer",
+      "description": "Velero, Goldilocks, CI/CD pipelines, GitHub Actions",
+      "focus": [
+        "lib/stacks/addons/operations.ts",
+        ".github/workflows/"
+      ],
+      "branch": "agent-6-ops",
+      "dependencies": [1, 2],
+      "blocks": [7]
+    },
+    {
+      "id": 7,
+      "name": "QA",
+      "role": "QA Engineer",
+      "description": "Unit tests, integration tests, policy validation",
+      "focus": [
+        "test/"
+      ],
+      "branch": "agent-7-qa",
+      "dependencies": [2, 3, 4, 5, 6],
+      "blocks": [8]
+    },
+    {
+      "id": 8,
+      "name": "DOCS",
+      "role": "Tech Writer",
+      "description": "README, runbooks, architecture diagrams, API docs",
+      "focus": [
+        "docs/",
+        "README.md"
+      ],
+      "branch": "agent-8-docs",
+      "dependencies": [7],
+      "blocks": []
+    }
+  ],
+  "phases": [
+    {
+      "name": "Foundation",
+      "description": "Types, config schema, project structure",
+      "agents": [1],
+      "parallel": false
+    },
+    {
+      "name": "Core Infrastructure",
+      "description": "VPC, EKS, and addon constructs",
+      "agents": [2, 3, 4],
+      "parallel": true
+    },
+    {
+      "name": "Integration",
+      "description": "Networking addons, operations, CI/CD",
+      "agents": [5, 6],
+      "parallel": true
+    },
+    {
+      "name": "Validation",
+      "description": "Testing and documentation",
+      "agents": [7, 8],
+      "parallel": true
+    }
+  ],
+  "deliverables": [
+    "Working CDK synth for all 3 environments",
+    "All 16 helm charts configured",
+    "80% test coverage",
+    "Complete documentation with runbooks",
+    "CI/CD pipelines for GitHub Actions"
+  ]
+}
