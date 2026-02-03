@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+
+# Build output
+*.js
+*.d.ts
+*.js.map
+!jest.config.js
+cdk.out/
+.cdk.staging/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CDK context (contains account-specific info)
+cdk.context.json
+
+# Test
+coverage/
+
+# Generated API docs
+docs/api/
+
+# Secrets and credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+*credentials*
+*kubeconfig*
+*secret*.yaml
+*secret*.yml
+*secret*.json
+!*secret*-store*.yaml
+!*secret*-store*.yml
+
+# IAM roles / sensitive AWS config
+*role-trust-policy*.json
+*assume-role*.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Orchestra sessions (keep structure, ignore session data)
+.claude/orchestra/sessions/*
+!.claude/orchestra/sessions/.gitkeep
+
+# Keep TypeScript source files
+!bin/*.ts
+!lib/**/*.ts
+!config/**/*.ts
+!test/**/*.ts
+
+# Re-exclude build output that matches *.ts
+*.d.ts
+
+# Nested repos
+aws-eks-gitops/

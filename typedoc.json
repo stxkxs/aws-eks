@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "lib/constructs/index.ts",
+    "lib/types/index.ts",
+    "lib/utils.ts",
+    "lib/utils/index.ts",
+    "config/index.ts"
+  ],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeInternal": false,
+  "includeVersion": true,
+  "categoryOrder": ["Constructs", "Types", "Utilities", "Configuration"],
+  "sort": ["source-order"]
+}

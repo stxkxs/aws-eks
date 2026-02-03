@@ -1,0 +1,673 @@
+# Multi-Agent Orchestra
+
+A system for coordinating multiple Claude agents working in parallel on the AWS EKS infrastructure project.
+
+## Overview
+
+The Orchestra system enables 8 specialized Claude agents to work simultaneously on different aspects of the codebase, each with their own git worktree and dedicated focus area.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        ORCHESTRATOR (You)                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   Phase 1: Foundation                                            │
+│   ┌─────────┐                                                    │
+│   │  ARCH   │ Types, config, structure                           │
+│   └────┬────┘                                                    │
+│        │                                                         │
+│   Phase 2: Core Infrastructure (parallel)                        │
+│   ┌────┴────┬─────────┬─────────┐                               │
+│   │  PLAT   │   SEC   │   OBS   │                               │
+│   │ Platform│Security │  Obsv.  │                               │
+│   └────┬────┴────┬────┴────┬────┘                               │
+│        │         │         │                                     │
+│   Phase 3: Integration (parallel)                                │
+│   ┌────┴─────────┴─────────┴────┐                               │
+│   │    NET     │      OPS       │                               │
+│   │ Networking │  Operations    │                               │
+│   └────────────┴───────┬────────┘                               │
+│                        │                                         │
+│   Phase 4: Validation (parallel)                                 │
+│   ┌────────────────────┴────────┐                               │
+│   │     QA      │     DOCS      │                               │
+│   │   Testing   │Documentation  │                               │
+│   └─────────────┴───────────────┘                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Quick Start
+
+### 1. Initialize Session
+
+```bash
+export ORCH_ROOT=<project-root>/.claude/orchestra
+export CONFIG_NAME=aws-eks-dev
+export SESSION_NAME=sprint-1
+export TARGET_REPO=<project-root>
+export USE_WORKTREES=true
+
+$ORCH_ROOT/scripts/init.sh
+```
+
+### 2. Start Zellij Session
+
+```bash
+export ORCH_SESSION_DIR=$HOME/.claude/orchestration/sessions/sprint-1
+zellij --layout $ORCH_SESSION_DIR/layout.kdl
+```
+
+### 3. Execute Agents in Order
+
+| Phase | Tab | Agents | Wait For |
+|-------|-----|--------|----------|
+| 1 | Infrastructure | ARCH | - |
+| 2 | Infrastructure + Addons | PLAT, SEC, OBS | ARCH complete |
+| 3 | Addons | NET, OPS | PLAT complete |
+| 4 | Validation | QA, DOCS | All above complete |
+
+## Architecture
+
+### Directory Structure
+
+```
+.claude/orchestra/
+├── configs/                    # Session configurations
+│   └── aws-eks-dev.json       # 8-agent config with dependencies
+├── layouts/                    # Zellij terminal layouts
+│   └── 8-agents.kdl           # 5-tab layout for 8 agents
+├── mcp-server/                 # Inter-agent communication
+│   ├── src/index.ts           # MCP server source
+│   ├── dist/index.js          # Compiled server
+│   └── package.json
+├── scripts/                    # Orchestration scripts
+│   ├── init.sh                # Initialize new session
+│   ├── start-agent.sh         # Start individual agent
+│   ├── monitor.sh             # Real-time status dashboard
+│   └── generate-layout.sh     # Dynamic layout generation
+├── templates/                  # Agent instruction templates
+│   └── agents/                # Role-specific CLAUDE.md templates
+│       ├── arch.md
+│       ├── plat.md
+│       ├── sec.md
+│       ├── obs.md
+│       ├── net.md
+│       ├── ops.md
+│       ├── qa.md
+│       └── docs.md
+└── sessions/                   # Session data (gitignored)
+```
+
+### Session Structure (created by init.sh)
+
+```
+~/.claude/orchestration/sessions/{SESSION_NAME}/
+├── session.json               # Session metadata
+├── config.json                # Copy of configuration
+├── layout.kdl                 # Zellij layout
+├── agents/                    # Per-agent CLAUDE.md files
+│   ├── ARCH/CLAUDE.md
+│   ├── PLAT/CLAUDE.md
+│   └── ...
+├── worktrees/                 # Git worktrees (isolated branches)
+│   ├── ARCH/                  # branch: agent-1-arch
+│   ├── PLAT/                  # branch: agent-2-plat
+│   └── ...
+├── logs/                      # Agent logs
+│   ├── agent-1.log
+│   └── ...
+├── agent-1-state.json         # Agent state files
+├── agent-1-query.md           # Incoming task queue
+├── agent-1-response.md        # Completion reports
+└── ...
+```
+
+## The 8 Agents
+
+| ID | Name | Role | Focus Areas | Dependencies |
+|----|------|------|-------------|--------------|
+| 1 | ARCH | Architect | `lib/types/`, `config/`, `bin/app.ts` | None |
+| 2 | PLAT | Platform Engineer | `lib/stacks/network.ts`, `cluster.ts` | ARCH |
+| 3 | SEC | Security Engineer | `lib/stacks/addons/security.ts` | ARCH |
+| 4 | OBS | Observability Engineer | `lib/stacks/addons/observability.ts` | ARCH |
+| 5 | NET | Networking Engineer | `lib/stacks/addons/networking.ts` | ARCH, PLAT |
+| 6 | OPS | Operations Engineer | `lib/stacks/addons/operations.ts`, `.github/` | ARCH, PLAT |
+| 7 | QA | QA Engineer | `test/` | PLAT, SEC, OBS, NET, OPS |
+| 8 | DOCS | Tech Writer | `docs/`, `README.md` | QA |
+
+## MCP Server
+
+The MCP (Model Context Protocol) server enables inter-agent communication. It's auto-configured in `.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "orchestra": {
+      "command": "node",
+      "args": [".claude/orchestra/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Tool | Description | Usage |
+|------|-------------|-------|
+| `check_queries()` | Check for pending tasks | Agent polls for incoming work |
+| `send_query(to, message, priority)` | Send task to another agent | Request work or ask questions |
+| `update_status(status, task)` | Update agent status | Report progress |
+| `list_agents()` | List all agents and status | See who's available |
+| `mark_complete(summary)` | Mark task complete | Signal completion |
+
+### Status Values
+
+| Status | Icon | Meaning |
+|--------|------|---------|
+| `pending` | `[.]` | Waiting to start |
+| `running` | `[*]` | Actively working |
+| `idle` | `[ ]` | Ready for tasks |
+| `blocked` | `[X]` | Waiting on dependency |
+| `complete` | `[+]` | Finished all work |
+| `stopped` | `[-]` | Agent terminated |
+
+## Zellij Layout
+
+The `8-agents.kdl` layout creates 5 tabs:
+
+| Tab | Panes | Purpose |
+|-----|-------|---------|
+| **Orchestrator** | 1 | Your control terminal |
+| **Infrastructure** | 2 | ARCH (left), PLAT (right) |
+| **Addons** | 4 | SEC, OBS, NET, OPS in 2x2 grid |
+| **Validation** | 2 | QA (left), DOCS (right) |
+| **Monitor** | 1 | Real-time status dashboard |
+
+### Keyboard Navigation
+
+| Keys | Action |
+|------|--------|
+| `Ctrl+t` then `n` | Next tab |
+| `Ctrl+t` then `p` | Previous tab |
+| `Ctrl+t` then `1-5` | Jump to tab |
+| `Ctrl+p` then arrows | Switch panes |
+| `Ctrl+q` | Quit zellij |
+
+## Git Worktrees
+
+Each agent works on an isolated branch via git worktrees:
+
+```bash
+# View all worktrees
+git worktree list
+
+# Example output:
+<project-root>                         1b1c6aa [main]
+~/.claude/orchestration/.../worktrees/ARCH      1b1c6aa [agent-1-arch]
+~/.claude/orchestration/.../worktrees/PLAT      1b1c6aa [agent-2-plat]
+...
+```
+
+### Merging Agent Work
+
+After agents complete their work:
+
+```bash
+# Switch to main
+cd <project-root>
+git checkout main
+
+# Merge each agent's branch
+git merge agent-1-arch --no-ff -m "feat(arch): types and config from ARCH agent"
+git merge agent-2-plat --no-ff -m "feat(platform): VPC and cluster from PLAT agent"
+# ... continue for all agents
+
+# Or cherry-pick specific commits
+git cherry-pick <commit-hash>
+```
+
+## Scripts Reference
+
+### init.sh
+
+Initializes a new orchestration session.
+
+**Environment Variables:**
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ORCH_ROOT` | Yes | Path to orchestra directory |
+| `CONFIG_NAME` | Yes | Config file name (without .json) |
+| `SESSION_NAME` | Yes | Session identifier |
+| `TARGET_REPO` | Yes | Path to target repository |
+| `USE_WORKTREES` | No | `true` for git worktrees, `false` for symlinks |
+
+**Creates:**
+- Session directory in `~/.claude/orchestration/sessions/`
+- CLAUDE.md for each agent
+- Git worktrees or symlinks
+- State files for monitoring
+
+### start-agent.sh
+
+Starts an individual agent.
+
+```bash
+# Usage
+$ORCH_ROOT/scripts/start-agent.sh <agent-num>
+
+# Agent 0 = orchestrator shell
+# Agents 1-8 = Claude instances
+```
+
+**Environment Variables:**
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ORCH_ROOT` | Yes | Path to orchestra directory |
+| `ORCH_SESSION_DIR` | Yes | Path to session directory |
+
+### monitor.sh
+
+Real-time status dashboard showing all agents.
+
+```bash
+$ORCH_ROOT/scripts/monitor.sh
+```
+
+Displays:
+- Agent names and roles
+- Current status with color-coded icons
+- Last active timestamp
+
+## Configuration
+
+### aws-eks-dev.json
+
+The configuration defines agents, dependencies, and phases:
+
+```json
+{
+  "name": "aws-eks-dev",
+  "agents": [
+    {
+      "id": 1,
+      "name": "ARCH",
+      "role": "Architect",
+      "focus": ["lib/types/", "config/"],
+      "branch": "agent-1-arch",
+      "dependencies": [],
+      "blocks": [2, 3, 4, 5, 6]
+    }
+    // ... more agents
+  ],
+  "phases": [
+    {
+      "name": "Foundation",
+      "agents": [1],
+      "parallel": false
+    }
+    // ... more phases
+  ]
+}
+```
+
+## Troubleshooting
+
+### Session already exists
+
+```bash
+rm -rf ~/.claude/orchestration/sessions/sprint-1
+# Then re-run init.sh
+```
+
+### Worktree not found
+
+```bash
+# Check existing worktrees
+git worktree list
+
+# Remove stale worktrees
+git worktree prune
+
+# Re-run init.sh with USE_WORKTREES=true
+```
+
+### Monitor shows "null" for agent count
+
+Session was created incorrectly. Fix session.json:
+
+```bash
+# Ensure session.json has agentCount
+cat ~/.claude/orchestration/sessions/sprint-1/session.json
+# Should have: "agentCount": 8
+```
+
+### MCP tools not available
+
+Verify `.claude/settings.json` has the orchestra MCP server configured:
+
+```json
+{
+  "mcpServers": {
+    "orchestra": {
+      "command": "node",
+      "args": [".claude/orchestra/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+### Agent can't find CLAUDE.md
+
+The CLAUDE.md files are in the session's `agents/` directory, not in the worktree:
+
+```
+~/.claude/orchestration/sessions/sprint-1/agents/ARCH/CLAUDE.md
+```
+
+## Cleanup
+
+### Remove a session
+
+```bash
+SESSION_NAME=sprint-1
+SESSION_DIR=~/.claude/orchestration/sessions/$SESSION_NAME
+
+# Remove worktrees first
+git worktree list | grep $SESSION_NAME | awk '{print $1}' | \
+  xargs -I{} git worktree remove {} --force
+
+# Remove session directory
+rm -rf $SESSION_DIR
+
+# Prune worktree references
+git worktree prune
+```
+
+### Remove agent branches
+
+```bash
+git branch -D agent-1-arch agent-2-plat agent-3-sec agent-4-obs \
+  agent-5-net agent-6-ops agent-7-qa agent-8-docs
+```
+
+## Smoke Testing
+
+Before using the orchestra for real work, validate that the full pipeline works: session init, query delivery, agent startup, MCP communication, and completion reporting.
+
+### Quick Smoke Test (single command)
+
+```bash
+bash scripts/smoke-test-orchestra.sh
+```
+
+This launches all 8 agents in zellij with role-specific read-only tasks. Each agent reads files in their focus area and calls `mark_complete` via MCP when done. No code changes are made.
+
+### What It Validates
+
+| Component | How It's Tested |
+|-----------|----------------|
+| `init.sh` | Creates session, state files, CLAUDE.md per agent |
+| Query delivery | Pre-populated `agent-N-query.md` files are consumed |
+| `start-agent.sh` | Agent boots, reads CLAUDE.md, finds query |
+| MCP `check_queries` | Agent reads and clears the query file |
+| MCP `mark_complete` | Agent writes `agent-N-response.md` and updates state |
+| Zellij layout | All 4 tabs render with correct agent panes |
+| Monitor | Status dashboard shows agent transitions |
+
+### Verifying Results
+
+After agents finish (1-2 minutes each), check from the Orchestrator tab:
+
+```bash
+# Check all responses
+SESSION=~/.claude/orchestration/sessions/smoke-test
+for i in {1..8}; do
+  echo "=== Agent $i ==="
+  cat "$SESSION/agent-$i-response.md" 2>/dev/null || echo "no response yet"
+done
+
+# Check all state files show "complete"
+for i in {1..8}; do
+  jq -r '"\(.agentName): \(.status)"' "$SESSION/agent-$i-state.json"
+done
+```
+
+### Expected Output
+
+All 8 agents should show `complete` status, and each should have a response file with a summary. If an agent is stuck at `running` or `pending`:
+
+1. Check its zellij pane for errors
+2. Verify the MCP server is built: `ls .claude/orchestra/mcp-server/dist/index.js`
+3. Check the query file was correctly formatted (see [Query File Format](#query-file-format) below)
+
+### Cleanup
+
+```bash
+rm -rf ~/.claude/orchestration/sessions/smoke-test
+```
+
+## How the Pieces Connect
+
+Understanding the data flow helps when debugging or extending the system.
+
+### Lifecycle of a Task
+
+```
+1. Orchestrator writes    →  agent-N-query.md     (markdown with YAML frontmatter)
+2. Agent starts           →  start-agent.sh boots Claude, sends initial prompt
+3. Claude reads CLAUDE.md →  understands role, focus areas, session paths
+4. Claude calls MCP       →  check_queries() reads and deletes agent-N-query.md
+5. Claude does work       →  reads/writes files in worktree
+6. Claude calls MCP       →  mark_complete(summary) writes agent-N-response.md
+7. MCP updates            →  agent-N-state.json → status: "complete"
+8. Monitor picks up       →  shows [+] complete in dashboard
+```
+
+### Query File Format
+
+Queries use markdown with YAML frontmatter. The MCP server parses this format:
+
+```markdown
+---
+from: orchestrator
+to: agent-3
+timestamp: 2026-02-06T00:00:00Z
+priority: normal
+---
+
+Your task description here. Be specific about:
+- What files to read or modify
+- What the deliverable is
+- When to call mark_complete
+```
+
+**Fields:**
+| Field | Values | Purpose |
+|-------|--------|---------|
+| `from` | agent name or `orchestrator` | Who sent the query |
+| `to` | `agent-N` | Target agent |
+| `timestamp` | ISO 8601 | When it was sent |
+| `priority` | `low`, `normal`, `high` | Urgency (informational, not enforced) |
+
+### State File Format
+
+Each agent has a JSON state file that the monitor reads:
+
+```json
+{
+  "agentId": 3,
+  "agentName": "SEC",
+  "status": "running",
+  "lastActive": "2026-02-06T12:34:56.789Z",
+  "currentTask": "Reviewing security policies",
+  "restarts": 0
+}
+```
+
+The MCP tools `update_status` and `mark_complete` update this file. The monitor script polls it.
+
+## Extending the Orchestra
+
+### Adding a New Agent
+
+1. **Update the config** (`configs/aws-eks-dev.json`):
+   ```json
+   {
+     "id": 9,
+     "name": "COST",
+     "role": "Cost Engineer",
+     "description": "Cost optimization, right-sizing, Spot strategies",
+     "focus": ["lib/constructs/cost-*.ts", "config/"],
+     "branch": "agent-9-cost",
+     "dependencies": [2],
+     "blocks": [7]
+   }
+   ```
+   Add the agent ID to the appropriate phase in `phases[]`.
+
+2. **Create a template** (optional, for role-specific CLAUDE.md):
+   ```
+   .claude/orchestra/templates/agents/cost.md
+   ```
+   Use `{{AGENT_ID}}`, `{{AGENT_NAME}}`, `{{QUERY_FILE}}`, `{{RESPONSE_FILE}}`, `{{STATE_FILE}}`, `{{TARGET_REPO}}` as placeholders - `init.sh` substitutes them.
+
+3. **Update the layout** (`layouts/8-agents.kdl`):
+   Add a pane for the new agent in the appropriate tab, or create a new tab.
+
+4. **Re-init**: Delete the existing session and re-run `init.sh`.
+
+### Creating a Custom Configuration
+
+Configs live in `configs/`. Copy the existing one as a starting point:
+
+```bash
+cp .claude/orchestra/configs/aws-eks-dev.json \
+   .claude/orchestra/configs/my-feature.json
+```
+
+You can:
+- Remove agents you don't need (e.g., keep only PLAT + QA for a focused infra change)
+- Change focus areas to match the task
+- Adjust dependencies and phases
+
+Example: 3-agent config for a security audit:
+
+```json
+{
+  "name": "security-audit",
+  "layout": "8-agents.kdl",
+  "agents": [
+    {
+      "id": 1, "name": "SEC", "role": "Security Auditor",
+      "description": "Audit all security configurations",
+      "focus": ["lib/stacks/addons/security.ts", "policies/"],
+      "branch": "audit-sec", "dependencies": [], "blocks": [3]
+    },
+    {
+      "id": 2, "name": "NET", "role": "Network Auditor",
+      "description": "Audit network policies and Cilium config",
+      "focus": ["lib/stacks/addons/networking.ts", "lib/constructs/network-policy.ts"],
+      "branch": "audit-net", "dependencies": [], "blocks": [3]
+    },
+    {
+      "id": 3, "name": "QA", "role": "Audit Validator",
+      "description": "Write tests validating audit findings",
+      "focus": ["test/"],
+      "branch": "audit-qa", "dependencies": [1, 2], "blocks": []
+    }
+  ],
+  "phases": [
+    { "name": "Audit", "agents": [1, 2], "parallel": true },
+    { "name": "Validate", "agents": [3], "parallel": false }
+  ]
+}
+```
+
+Use it with `CONFIG_NAME=security-audit` when initializing.
+
+### Writing Effective Queries
+
+Good queries are scoped, explicit, and tell the agent when to stop:
+
+```markdown
+---
+from: orchestrator
+to: agent-3
+timestamp: 2026-02-06T00:00:00Z
+priority: high
+---
+
+Add a Kyverno policy that blocks pods without resource limits.
+
+1. Create `lib/constructs/kyverno-require-limits.ts` using the KyvernoPolicy construct
+2. Add a test in `test/constructs/kyverno-require-limits.test.ts`
+3. Export from `lib/constructs/index.ts`
+4. Run `npm test` to verify
+5. Commit with message: "feat(sec): add require-limits Kyverno policy"
+6. Call mark_complete with a summary of what you created
+```
+
+Bad queries are vague: "improve security" or "make things better". Be specific about files, patterns, and exit criteria.
+
+### Sending Queries Mid-Session
+
+You can drop queries into a running session without restarting agents. From the Orchestrator tab:
+
+```bash
+SESSION=~/.claude/orchestration/sessions/sprint-1
+
+cat > "$SESSION/agent-3-query.md" << 'EOF'
+---
+from: orchestrator
+to: agent-3
+timestamp: 2026-02-06T12:00:00Z
+priority: high
+---
+
+New task: Add OPA policy for container image registry allowlisting.
+EOF
+```
+
+The agent picks it up next time it calls `check_queries()`. If the agent is idle, paste "Check for new queries" in its pane.
+
+## Best Practices
+
+1. **Smoke test first** - Run `scripts/smoke-test-orchestra.sh` before any real session
+2. **Start ARCH first** - It establishes types and config that others depend on
+3. **Watch the monitor** - Keep the Monitor tab visible to track progress
+4. **Don't rush phases** - Wait for dependencies to complete before starting next phase
+5. **Commit frequently** - Each agent should commit their work regularly
+6. **Review before merge** - Check each branch before merging to main
+7. **Use meaningful commits** - Agents should write clear commit messages
+8. **Scope queries tightly** - Explicit file lists and exit criteria reduce agent drift
+
+## Workflow Phases
+
+### 1. Setup Phase
+Initialize session with `init.sh`, start zellij layout.
+
+### 2. Implementation Phase
+Agents work on their assigned tasks in dependency order.
+
+### 3. Enhancement Phase
+After initial implementation, agents enhance with production hardening.
+See [Enhancement Runbook](../runbooks/orchestra-enhancement.md).
+
+### 4. Wrap-Up Phase
+Agents squash commits, verify builds, report ready for merge.
+
+### 5. Review & Merge Phase
+Orchestrator reviews all branches, resolves conflicts, merges to main, creates PR.
+
+```
+Setup → Implementation → Enhancement → Wrap-Up → Review & Merge → PR
+```
+
+## Related Documentation
+
+- [Orchestra Setup Runbook](../runbooks/orchestra-setup.md) - Step-by-step setup guide
+- [Orchestra Enhancement Runbook](../runbooks/orchestra-enhancement.md) - Enhancement phase prompts
+- [Multi-Agent Development](multi-agent.md) - General multi-agent patterns
+- [Contributing](contributing.md) - Code contribution guidelines
+- [Testing](testing.md) - Testing standards

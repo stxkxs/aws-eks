@@ -1,0 +1,65 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "automated"
+    groups:
+      # Group CDK-related updates together
+      aws-cdk:
+        patterns:
+          - "aws-cdk*"
+          - "@aws-cdk/*"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "jest"
+          - "@types/jest"
+          - "ts-jest"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group TypeScript-related updates
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/node"
+          - "ts-node"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "ci/cd"
+      - "automated"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -1,0 +1,577 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aws-eks-infrastructure/config-schema.json",
+  "title": "AWS EKS Infrastructure Configuration",
+  "description": "Configuration schema for AWS EKS Infrastructure deployment",
+  "type": "object",
+  "required": [
+    "environment",
+    "aws",
+    "features",
+    "network",
+    "cluster",
+    "systemNodeGroup",
+    "karpenter",
+    "helmConfigs",
+    "observability",
+    "backup",
+    "dns",
+    "security",
+    "tags"
+  ],
+  "properties": {
+    "environment": {
+      "type": "string",
+      "enum": ["dev", "staging", "production"],
+      "description": "Deployment environment"
+    },
+    "aws": {
+      "$ref": "#/definitions/AwsConfig"
+    },
+    "features": {
+      "$ref": "#/definitions/FeatureFlags"
+    },
+    "network": {
+      "$ref": "#/definitions/NetworkConfig"
+    },
+    "cluster": {
+      "$ref": "#/definitions/ClusterConfig"
+    },
+    "systemNodeGroup": {
+      "$ref": "#/definitions/SystemNodeGroupConfig"
+    },
+    "karpenter": {
+      "$ref": "#/definitions/KarpenterConfig"
+    },
+    "helmConfigs": {
+      "$ref": "#/definitions/HelmConfigs"
+    },
+    "observability": {
+      "$ref": "#/definitions/ObservabilityConfig"
+    },
+    "backup": {
+      "$ref": "#/definitions/BackupConfig"
+    },
+    "dns": {
+      "$ref": "#/definitions/DnsConfig"
+    },
+    "security": {
+      "$ref": "#/definitions/SecurityConfig"
+    },
+    "cilium": {
+      "$ref": "#/definitions/CiliumConfig"
+    },
+    "hubble": {
+      "$ref": "#/definitions/HubbleConfig"
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Resource tags to apply"
+    }
+  },
+  "definitions": {
+    "AwsConfig": {
+      "type": "object",
+      "description": "AWS account and region configuration",
+      "required": ["accountId", "region"],
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "pattern": "^\\d{12}$",
+          "description": "AWS account ID (12 digits)"
+        },
+        "region": {
+          "type": "string",
+          "pattern": "^[a-z]{2}-[a-z]+-\\d$",
+          "description": "AWS region (e.g., us-west-2)"
+        }
+      }
+    },
+    "FeatureFlags": {
+      "type": "object",
+      "description": "Feature flags for optional components",
+      "required": [
+        "multiAzNat",
+        "hubbleUi",
+        "falcoKillMode",
+        "trivyAdmission",
+        "veleroBackups",
+        "goldilocks",
+        "costAllocationTags",
+        "vpcEndpoints",
+        "nodeLocalDns",
+        "defaultNetworkPolicies",
+        "priorityClasses",
+        "resourceQuotas"
+      ],
+      "properties": {
+        "multiAzNat": {
+          "type": "boolean",
+          "description": "Multi-AZ NAT gateways (disable in dev for cost)"
+        },
+        "hubbleUi": {
+          "type": "boolean",
+          "description": "Deploy Hubble UI for network observability"
+        },
+        "falcoKillMode": {
+          "type": "boolean",
+          "description": "Falco kill mode - terminate suspicious pods"
+        },
+        "trivyAdmission": {
+          "type": "boolean",
+          "description": "Trivy admission controller - block unscanned images"
+        },
+        "veleroBackups": {
+          "type": "boolean",
+          "description": "Enable Velero backups"
+        },
+        "goldilocks": {
+          "type": "boolean",
+          "description": "Enable Goldilocks resource recommendations"
+        },
+        "costAllocationTags": {
+          "type": "boolean",
+          "description": "Enable cost allocation tags"
+        },
+        "vpcEndpoints": {
+          "type": "boolean",
+          "description": "Enable VPC endpoints for ECR, S3, SSM"
+        },
+        "nodeLocalDns": {
+          "type": "boolean",
+          "description": "Enable node-local DNS cache"
+        },
+        "defaultNetworkPolicies": {
+          "type": "boolean",
+          "description": "Deploy default network policies"
+        },
+        "priorityClasses": {
+          "type": "boolean",
+          "description": "Deploy priority classes"
+        },
+        "resourceQuotas": {
+          "type": "boolean",
+          "description": "Deploy resource quotas"
+        }
+      }
+    },
+    "NetworkConfig": {
+      "type": "object",
+      "description": "VPC and network configuration",
+      "required": ["vpcCidr", "natGateways", "maxAzs", "flowLogs"],
+      "properties": {
+        "vpcCidr": {
+          "type": "string",
+          "pattern": "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$",
+          "description": "VPC CIDR block (e.g., 10.0.0.0/16)"
+        },
+        "natGateways": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Number of NAT gateways"
+        },
+        "maxAzs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Number of availability zones"
+        },
+        "flowLogs": {
+          "type": "boolean",
+          "description": "Enable VPC flow logs"
+        }
+      }
+    },
+    "ClusterConfig": {
+      "type": "object",
+      "description": "EKS cluster configuration",
+      "required": ["version", "name", "privateEndpoint", "publicEndpoint", "logging", "secretsEncryption"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^1\\.\\d+$",
+          "description": "Kubernetes version (e.g., 1.31)"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "description": "Cluster name suffix"
+        },
+        "privateEndpoint": {
+          "type": "boolean",
+          "description": "Enable private API endpoint"
+        },
+        "publicEndpoint": {
+          "type": "boolean",
+          "description": "Enable public API endpoint"
+        },
+        "logging": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+          },
+          "description": "Cluster logging types"
+        },
+        "secretsEncryption": {
+          "type": "boolean",
+          "description": "Enable envelope encryption with KMS"
+        }
+      }
+    },
+    "SystemNodeGroupConfig": {
+      "type": "object",
+      "description": "Managed node group for system workloads",
+      "required": ["instanceTypes", "minSize", "maxSize", "desiredSize", "diskSize", "amiType"],
+      "properties": {
+        "instanceTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "EC2 instance types"
+        },
+        "minSize": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum number of nodes"
+        },
+        "maxSize": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum number of nodes"
+        },
+        "desiredSize": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Desired number of nodes"
+        },
+        "diskSize": {
+          "type": "integer",
+          "minimum": 20,
+          "description": "Disk size in GB"
+        },
+        "amiType": {
+          "type": "string",
+          "enum": ["AL2_x86_64", "AL2_ARM_64", "BOTTLEROCKET_x86_64", "BOTTLEROCKET_ARM_64"],
+          "description": "AMI type"
+        }
+      }
+    },
+    "KarpenterConfig": {
+      "type": "object",
+      "description": "Karpenter node autoscaling configuration",
+      "required": [
+        "nodePoolName",
+        "instanceCategories",
+        "instanceSizes",
+        "spotEnabled",
+        "cpuLimit",
+        "memoryLimitGi",
+        "consolidationPolicy",
+        "consolidateAfter"
+      ],
+      "properties": {
+        "nodePoolName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Node pool name"
+        },
+        "instanceCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Instance categories (e.g., m, c, r)"
+        },
+        "instanceSizes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Instance sizes (e.g., medium, large)"
+        },
+        "spotEnabled": {
+          "type": "boolean",
+          "description": "Enable spot instances"
+        },
+        "cpuLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "CPU limit for node pool"
+        },
+        "memoryLimitGi": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Memory limit in Gi"
+        },
+        "consolidationPolicy": {
+          "type": "string",
+          "enum": ["WhenEmpty", "WhenEmptyOrUnderutilized"],
+          "description": "Consolidation policy"
+        },
+        "consolidateAfter": {
+          "type": "string",
+          "description": "Consolidation delay (e.g., 1m, 30s)"
+        }
+      }
+    },
+    "HelmChartConfig": {
+      "type": "object",
+      "description": "Configuration for a single Helm chart",
+      "required": ["version"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Chart version"
+        },
+        "values": {
+          "type": "object",
+          "description": "Helm values to merge with defaults"
+        }
+      }
+    },
+    "HelmConfigs": {
+      "type": "object",
+      "description": "Helm chart configurations",
+      "required": [
+        "certManager",
+        "karpenter",
+        "awsLoadBalancerController",
+        "metricsServer",
+        "externalDns",
+        "externalSecrets",
+        "reloader",
+        "kyverno",
+        "velero",
+        "goldilocks",
+        "awsNodeTerminationHandler",
+        "cilium",
+        "falco",
+        "trivyOperator",
+        "loki",
+        "tempo",
+        "grafanaAgent",
+        "promtail",
+        "ebsCsiDriver"
+      ],
+      "properties": {
+        "certManager": { "$ref": "#/definitions/HelmChartConfig" },
+        "karpenter": { "$ref": "#/definitions/HelmChartConfig" },
+        "awsLoadBalancerController": { "$ref": "#/definitions/HelmChartConfig" },
+        "metricsServer": { "$ref": "#/definitions/HelmChartConfig" },
+        "externalDns": { "$ref": "#/definitions/HelmChartConfig" },
+        "externalSecrets": { "$ref": "#/definitions/HelmChartConfig" },
+        "reloader": { "$ref": "#/definitions/HelmChartConfig" },
+        "kyverno": { "$ref": "#/definitions/HelmChartConfig" },
+        "velero": { "$ref": "#/definitions/HelmChartConfig" },
+        "goldilocks": { "$ref": "#/definitions/HelmChartConfig" },
+        "awsNodeTerminationHandler": { "$ref": "#/definitions/HelmChartConfig" },
+        "cilium": { "$ref": "#/definitions/HelmChartConfig" },
+        "falco": { "$ref": "#/definitions/HelmChartConfig" },
+        "trivyOperator": { "$ref": "#/definitions/HelmChartConfig" },
+        "loki": { "$ref": "#/definitions/HelmChartConfig" },
+        "tempo": { "$ref": "#/definitions/HelmChartConfig" },
+        "grafanaAgent": { "$ref": "#/definitions/HelmChartConfig" },
+        "promtail": { "$ref": "#/definitions/HelmChartConfig" },
+        "ebsCsiDriver": { "$ref": "#/definitions/HelmChartConfig" }
+      }
+    },
+    "ObservabilityConfig": {
+      "type": "object",
+      "description": "Observability stack configuration",
+      "required": ["lokiRetentionDays", "tempoRetentionDays", "containerInsights"],
+      "properties": {
+        "ampWorkspaceArn": {
+          "type": "string",
+          "description": "AWS Managed Prometheus workspace ARN"
+        },
+        "amgWorkspaceArn": {
+          "type": "string",
+          "description": "AWS Managed Grafana workspace ARN"
+        },
+        "lokiRetentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Loki log retention in days"
+        },
+        "tempoRetentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Tempo trace retention in days"
+        },
+        "containerInsights": {
+          "type": "boolean",
+          "description": "Enable Container Insights"
+        }
+      }
+    },
+    "BackupConfig": {
+      "type": "object",
+      "description": "Velero backup configuration",
+      "required": ["bucketName", "dailyRetentionDays", "weeklyRetentionDays", "includedNamespaces"],
+      "properties": {
+        "bucketName": {
+          "type": "string",
+          "description": "S3 bucket for backups"
+        },
+        "dailyRetentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Daily backup retention"
+        },
+        "weeklyRetentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Weekly backup retention"
+        },
+        "includedNamespaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Namespaces to backup (empty = all)"
+        }
+      }
+    },
+    "DnsConfig": {
+      "type": "object",
+      "description": "DNS and certificate configuration",
+      "required": ["hostedZoneId", "domainName", "wildcardCert"],
+      "properties": {
+        "hostedZoneId": {
+          "type": "string",
+          "description": "Route53 hosted zone ID"
+        },
+        "domainName": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "wildcardCert": {
+          "type": "boolean",
+          "description": "Create wildcard certificate"
+        }
+      }
+    },
+    "SecurityConfig": {
+      "type": "object",
+      "description": "Security configuration",
+      "required": ["allowedRegistries", "trivySeverityThreshold"],
+      "properties": {
+        "adminSsoArn": {
+          "type": "string",
+          "description": "AWS SSO permission set ARN for admins"
+        },
+        "githubOidcArn": {
+          "type": "string",
+          "description": "GitHub OIDC provider ARN"
+        },
+        "allowedRegistries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Allowed ECR registry account IDs"
+        },
+        "trivySeverityThreshold": {
+          "type": "string",
+          "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+          "description": "Trivy severity threshold for blocking"
+        }
+      }
+    },
+    "CiliumConfig": {
+      "type": "object",
+      "description": "Cilium CNI configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Cilium"
+        },
+        "serviceMesh": {
+          "type": "boolean",
+          "description": "Enable service mesh"
+        },
+        "mtls": {
+          "type": "boolean",
+          "description": "Enable mTLS"
+        },
+        "bandwidthManager": {
+          "type": "boolean",
+          "description": "Enable bandwidth manager"
+        },
+        "localRedirectPolicy": {
+          "type": "boolean",
+          "description": "Enable local redirect policy"
+        },
+        "clusterMesh": {
+          "type": "boolean",
+          "description": "Enable cluster mesh"
+        },
+        "tunnelMode": {
+          "type": "string",
+          "enum": ["vxlan", "geneve", "disabled"],
+          "description": "Tunnel mode"
+        },
+        "kubeProxyReplacement": {
+          "type": "boolean",
+          "description": "Enable kube-proxy replacement"
+        },
+        "hostFirewall": {
+          "type": "boolean",
+          "description": "Enable host firewall"
+        }
+      }
+    },
+    "HubbleConfig": {
+      "type": "object",
+      "description": "Hubble observability configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Hubble"
+        },
+        "relay": {
+          "type": "boolean",
+          "description": "Enable Hubble Relay"
+        },
+        "ui": {
+          "type": "boolean",
+          "description": "Enable Hubble UI"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["dns", "drop", "tcp", "flow", "icmp", "http"]
+          },
+          "description": "Metrics to export"
+        },
+        "flowExport": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["s3", "elasticsearch", "kafka"]
+            },
+            "endpoint": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
